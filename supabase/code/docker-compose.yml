@@ -363,11 +363,6 @@ services:
   db:
     image: supabase/postgres:15.8.1.085
     restart: unless-stopped
-    ports:
-      - target: 5432
-        published: 5432
-        protocol: tcp
-        mode: host
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       # Must be superuser to create event trigger
