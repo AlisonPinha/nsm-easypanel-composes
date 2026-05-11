@@ -1,0 +1,18 @@
+services:
+  writer:
+    image: alpine:3.20
+    restart: "no"
+    volumes:
+      - ./data:/data
+    command:
+      - sh
+      - -c
+      - |
+        echo "Writing persistent file at $$(date)"
+        echo "BRANCH=$$BRANCH ITERATION=$$ITERATION_TAG TIMESTAMP=$$(date)" >> /data/persistent.log
+        ls -la /data/
+        echo "Sleeping forever"
+        tail -f /dev/null
+    environment:
+      BRANCH: branch-A
+      ITERATION_TAG: ${ITERATION_TAG:-1}
