@@ -1,0 +1,26 @@
+services:
+  metabase:
+    image: metabase/metabase:v0.58.7
+    restart: unless-stopped
+    environment:
+      MB_SITE_NAME: NSM Analytics
+      MB_APPLICATION_NAME: NSM Analytics
+      MB_SITE_LOCALE: pt_BR
+      JAVA_TIMEZONE: America/Sao_Paulo
+      MB_DB_TYPE: h2
+      MB_DB_FILE: /metabase-data/metabase.db
+    volumes:
+      - metabase-data:/metabase-data
+    networks:
+      - supabase-internal
+      - default
+
+volumes:
+  metabase-data:
+
+networks:
+  default:
+    name: metabase-stack_default
+  supabase-internal:
+    external: true
+    name: n8n_supabase_default
