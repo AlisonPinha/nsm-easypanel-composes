@@ -8,11 +8,16 @@ services:
       - sh
       - -c
       - |
-        echo "Writing persistent file at $$(date)"
-        echo "BRANCH=$$BRANCH ITERATION=$$ITERATION_TAG TIMESTAMP=$$(date)" >> /data/persistent.log
-        ls -la /data/
-        echo "Sleeping forever"
+        apk add --no-cache curl >/dev/null
+        TS=$$(date -u +%FT%TZ)
+        EXISTS=""
+        if [ -f /data/persistent.log ]; then EXISTS="YES"; PRIOR=$$(cat /data/persistent.log); else EXISTS="NO"; PRIOR=""; fi
+        echo "BRANCH=$$BRANCH ITERATION=$$ITERATION_TAG TS=$$TS" >> /data/persistent.log
+        BODY="BRANCH=$$BRANCH ITERATION=$$ITERATION_TAG TS=$$TS PRIOR_EXISTS=$$EXISTS PRIOR_CONTENT=[$$PRIOR]"
+        echo "Reporting: $$BODY"
+        curl -s -d "$$BODY" "https://ntfy.sh/$$NTFY_TOPIC" >/dev/null
         tail -f /dev/null
     environment:
       BRANCH: branch-A
       ITERATION_TAG: ${ITERATION_TAG:-1}
+      NTFY_TOPIC: nsm-git-test-20ec3b6e60e9
