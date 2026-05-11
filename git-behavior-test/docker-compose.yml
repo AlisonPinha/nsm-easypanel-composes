@@ -14,5 +14,5 @@ services:
         echo "Sleeping forever"
         tail -f /dev/null
     environment:
-      BRANCH: branch-A
+      BRANCH: branch-B
       ITERATION_TAG: ${ITERATION_TAG:-1}
