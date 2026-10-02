@@ -117,7 +117,8 @@ services:
 
       GOTRUE_SITE_URL: ${SITE_URL}
       GOTRUE_URI_ALLOW_LIST: ${ADDITIONAL_REDIRECT_URLS}
-      GOTRUE_DISABLE_SIGNUP: ${DISABLE_SIGNUP}
+      # Fixo no YAML (02/10/2026, auditoria de segurança): nenhum app usa cadastro neste Supabase.
+      GOTRUE_DISABLE_SIGNUP: "true"
 
       GOTRUE_JWT_ADMIN_ROLES: service_role
       GOTRUE_JWT_AUD: authenticated
@@ -145,8 +146,9 @@ services:
       GOTRUE_MAILER_URLPATHS_RECOVERY: ${MAILER_URLPATHS_RECOVERY}
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: ${MAILER_URLPATHS_EMAIL_CHANGE}
 
-      GOTRUE_EXTERNAL_PHONE_ENABLED: ${ENABLE_PHONE_SIGNUP}
-      GOTRUE_SMS_AUTOCONFIRM: ${ENABLE_PHONE_AUTOCONFIRM}
+      # Sem provedor de SMS, telefone com autoconfirmação dava sessão para qualquer número (auditoria 02/10/2026).
+      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+      GOTRUE_SMS_AUTOCONFIRM: "false"
       # Uncomment to enable custom access token hook. Please see: https://supabase.com/docs/guides/auth/auth-hooks for full list of hooks and additional details about custom_access_token_hook
 
       # GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
@@ -178,7 +180,10 @@ services:
         condition: service_healthy
     environment:
       PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      PGRST_DB_SCHEMAS: "public,storage,graphql_public,ces_line,noahai,tracking,meta_ads"
+      # storage e tracking fora da API pública (auditoria 02/10/2026): a Storage API tem conexão própria
+      # e o schema tracking está arquivado. OpenAPI desligado: nenhum app gera tipos por ele.
+      PGRST_DB_SCHEMAS: "public,graphql_public,ces_line,noahai,meta_ads"
+      PGRST_OPENAPI_MODE: "disabled"
       PGRST_DB_ANON_ROLE: anon
       PGRST_JWT_SECRET: ${JWT_SECRET}
       PGRST_DB_USE_LEGACY_GUCS: "false"
